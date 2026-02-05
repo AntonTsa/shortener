@@ -1,9 +1,11 @@
 plugins {
-    id 'java'
+    id 'checkstyle'
+    id 'application'
+    id 'jacoco'
 }
 
 group = 'com.anton.tsarenko'
-version = '1.0-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -15,6 +17,55 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+checkstyle {
+    toolVersion = '13.0.0'
+    configFile = file("checkstyle.xml")
+    ignoreFailures = false
+}
+
+checkstyleMain {
+    source ='src/main/java'
+}
+
+checkstyleTest {
+    source ='src/test/java'
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'com.anton.tsarenko.shortener.AppLauncher'
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
 }
