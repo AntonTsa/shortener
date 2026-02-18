@@ -4,22 +4,17 @@ import com.anton.tsarenko.shortener.auth.dto.ExceptionResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 /**
  * Global exception handler for API exceptions.
@@ -35,20 +30,6 @@ public class ApiExceptionHandler {
     );
 
     /**
-     * Handler for HTTP status code exceptions.
-     *
-     * @param exception {@link HttpStatusCodeException} thrown by service
-     * @return {@link ResponseEntity} with status, header and body
-     */
-    @ExceptionHandler
-    @SuppressWarnings("unused")
-    public ResponseEntity<ExceptionResponse> handleBindException(
-            HttpStatusCodeException exception
-    ) {
-        return map((HttpStatus) exception.getStatusCode(), exception.getStatusText(), exception);
-    }
-
-    /**
      * Binding results for Request Body exception handler.
      *
      * @param exception {@link MethodArgumentNotValidException} to catch and extract error messages
@@ -61,7 +42,6 @@ public class ApiExceptionHandler {
             MethodArgumentNotValidException exception
     ) {
         return map(
-                HttpStatus.BAD_REQUEST,
                 exception.getBindingResult()
                         .getFieldErrors()
                         .stream()
@@ -73,25 +53,6 @@ public class ApiExceptionHandler {
                         )
                         .distinct()
                         .sorted(),
-                exception
-        );
-    }
-
-    /**
-     * Exception handler for empty results in storage.
-     *
-     * @param exception {@link EmptyResultDataAccessException} to catch and extract error messages
-     *                                                        from fields
-     * @return {@link ResponseEntity} with status {@link HttpStatus#NOT_FOUND},
-     */
-    @ExceptionHandler
-    @SuppressWarnings("unused")
-    public ResponseEntity<ExceptionResponse> handleBindException(
-            EmptyResultDataAccessException exception
-    ) {
-        return map(
-                HttpStatus.NOT_FOUND,
-                HttpStatus.NOT_FOUND.name(),
                 exception
         );
     }
@@ -135,47 +96,6 @@ public class ApiExceptionHandler {
     }
 
     /**
-     * Method argument mismatch exception handler.
-     *
-     * @param exception {@link MethodArgumentTypeMismatchException} to catch and extract
-     *                                                             meaningful response
-     * @return {@link ResponseEntity} with status {@link HttpStatus#BAD_REQUEST}
-     */
-    @ExceptionHandler
-    @SuppressWarnings("unused")
-    public ResponseEntity<ExceptionResponse> handleBindException(
-            MethodArgumentTypeMismatchException exception
-    ) {
-        return map(
-                HttpStatus.BAD_REQUEST,
-                Stream.concat(
-                        Stream.of(exception.getName() + REASON_DELIMITER + "provided wrong type"),
-                        Stream.ofNullable(exception.getRequiredType())
-                                .filter(Objects::nonNull)
-                                .map(Class::getSimpleName)
-                                .map("expected type is "::concat)
-                ),
-                exception
-        );
-    }
-
-
-    /**
-     * Not readable request data exception handler.
-     *
-     * @param exception {@link HttpMessageNotReadableException} to catch and extract
-     *                                                         meaningful response
-     * @return {@link ResponseEntity} with status {@link HttpStatus#BAD_REQUEST},
-     */
-    @ExceptionHandler
-    @SuppressWarnings("unused")
-    public ResponseEntity<ExceptionResponse> handleBindException(
-            HttpMessageNotReadableException exception
-    ) {
-        return map(HttpStatus.BAD_REQUEST, "Invalid request body received", exception);
-    }
-
-    /**
      * Global exception Handler.
      *
      * @param exception - exception
@@ -197,16 +117,14 @@ public class ApiExceptionHandler {
     /**
      * Converts specific exceptions to meaningful response.
      *
-     * @param httpStatus generic error code
-     * @param messages   stream of messages
-     * @param throwable  cause
+     * @param messages  stream of messages
+     * @param throwable cause
      * @return {@link ResponseEntity} with status, header and body
      */
-    private ResponseEntity<ExceptionResponse> map(HttpStatus httpStatus,
-                                                              Stream<String> messages,
-                                                              Throwable throwable) {
+    private ResponseEntity<ExceptionResponse> map(Stream<String> messages,
+                                                  Throwable throwable) {
         return map(
-                httpStatus,
+                HttpStatus.BAD_REQUEST,
                 messages.collect(Collectors.joining(MULTIPLE_ERRORS_DELIMITER)),
                 throwable);
     }

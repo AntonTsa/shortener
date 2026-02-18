@@ -9,6 +9,7 @@ import com.anton.tsarenko.shortener.auth.service.AuthService;
 import com.anton.tsarenko.shortener.auth.service.JwtService;
 import com.anton.tsarenko.shortener.exceptions.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 /**
  * Implementation of the authentication service.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
