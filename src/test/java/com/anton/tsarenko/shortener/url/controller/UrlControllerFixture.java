@@ -55,11 +55,6 @@ class UrlControllerFixture {
             " "
     );
 
-    /** Invalid URL create request with past expiration timestamp. */
-    static final UrlRequest INVALID_PAST_EXPIRED_AT_REQUEST = new UrlRequest(
-            "https://example.com/create"
-    );
-
     /** URL entity mapped from create request. */
     static final Url URL_TO_CREATE = Url.builder()
             .user(VALID_USER)
