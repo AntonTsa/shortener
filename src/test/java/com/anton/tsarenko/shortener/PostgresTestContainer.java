@@ -3,14 +3,11 @@ package com.anton.tsarenko.shortener;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * Base test class that starts a shared PostgreSQL Testcontainer and registers datasource props.
  * Extend this class in test classes to reuse the container and the DynamicPropertySource.
  */
-@Testcontainers
 public abstract class PostgresTestContainer {
 
     /**
@@ -18,13 +15,16 @@ public abstract class PostgresTestContainer {
      * This way we avoid starting and stopping the container for each test class,
      * which can be time-consuming.
      */
-    @Container
     @SuppressWarnings("resource")
-    public static final PostgreSQLContainer<?> POSTGRES =
+    private static final PostgreSQLContainer<?> POSTGRES =
             new PostgreSQLContainer<>("postgres:17.4")
                     .withDatabaseName("testdb")
                     .withUsername("test")
                     .withPassword("test");
+
+    static {
+        POSTGRES.start();
+    }
 
     @DynamicPropertySource
     static void datasourceProps(DynamicPropertyRegistry registry) {

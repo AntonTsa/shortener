@@ -15,6 +15,7 @@ import org.hibernate.validator.constraints.URL;
  * @param originalUrl the original URL to be shortened
  * @param expiredAt the expiration time for the shortened URL
  */
+@Schema(description = "Request payload for creating a short URL")
 public record UrlRequest(
         @Schema(
                 description = "Original URL to shorten",

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 import com.anton.tsarenko.shortener.auth.entity.User;
 import com.anton.tsarenko.shortener.auth.repo.UsersRepository;
 import com.anton.tsarenko.shortener.auth.service.impl.AuthServiceImpl;
-import com.anton.tsarenko.shortener.exceptions.UserAlreadyExistsException;
+import com.anton.tsarenko.shortener.exceptions.custom.UserAlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
