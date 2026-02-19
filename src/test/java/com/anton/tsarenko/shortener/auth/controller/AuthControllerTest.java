@@ -84,7 +84,7 @@ class AuthControllerTest {
             """)
     void registrationValid() throws Exception {
         // GIVEN
-        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
+        given(userMapper.toUserForRegistration(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
         doNothing().when(authService).register(VALID_USER);
 
         // WHEN
@@ -109,7 +109,8 @@ class AuthControllerTest {
             """)
     void registrationExistingUsername() throws Exception {
         // GIVEN
-        given(userMapper.toUser(EXISTED_USERNAME_AUTH_REQUEST)).willReturn(EXISTED_USERNAME_USER);
+        given(userMapper.toUserForRegistration(EXISTED_USERNAME_AUTH_REQUEST))
+                .willReturn(EXISTED_USERNAME_USER);
         doThrow(new UserAlreadyExistsException(EXISTED_USERNAME))
                 .when(authService).register(EXISTED_USERNAME_USER);
 
@@ -183,7 +184,7 @@ class AuthControllerTest {
             """)
     void loginValid() throws Exception {
         // GIVEN
-        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
+        given(userMapper.toUserForLogin(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
         given(authService.login(VALID_USER)).willReturn(VALID_TOKEN);
 
         // WHEN
@@ -209,7 +210,7 @@ class AuthControllerTest {
             """)
     void loginBadCredentials() throws Exception {
         // GIVEN
-        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
+        given(userMapper.toUserForLogin(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
         doThrow(new BadCredentialsException(BAD_CREDENTIALS_MESSAGE))
                 .when(authService).login(VALID_USER);
 

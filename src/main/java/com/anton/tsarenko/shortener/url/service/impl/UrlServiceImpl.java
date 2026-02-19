@@ -33,7 +33,7 @@ public class UrlServiceImpl implements UrlService {
         String shortCode;
         do {
             shortCode = generateShortCode();
-        } while (!urlRepository.existsByShortCode(shortCode));
+        } while (urlRepository.existsByShortCode(shortCode));
         return shortCode;
     }
 

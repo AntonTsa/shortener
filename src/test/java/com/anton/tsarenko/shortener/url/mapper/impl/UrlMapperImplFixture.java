@@ -24,8 +24,7 @@ class UrlMapperImplFixture {
 
     /** A valid request DTO used for mapping tests. */
     static final UrlRequest VALID_URL_REQUEST = new UrlRequest(
-            "https://example.com",
-            Instant.parse("2030-01-01T00:00:00Z")
+            "https://example.com"
     );
 
     /** First URL entity in page mapping scenario. */

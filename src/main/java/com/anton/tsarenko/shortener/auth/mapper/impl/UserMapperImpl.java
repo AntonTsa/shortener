@@ -16,10 +16,18 @@ public class UserMapperImpl implements UserMapper {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User toUser(AuthRequest request) {
+    public User toUserForRegistration(AuthRequest request) {
         return User.builder()
                 .username(request.username())
                 .passwordHash(passwordEncoder.encode(request.password()))
+                .build();
+    }
+
+    @Override
+    public User toUserForLogin(AuthRequest request) {
+        return User.builder()
+                .username(request.username())
+                .passwordHash(request.password())
                 .build();
     }
 }

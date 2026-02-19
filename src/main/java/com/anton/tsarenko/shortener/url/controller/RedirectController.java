@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/V1/s_link")
+@RequestMapping({"/api/v1/s_link", "/api/V1/s_link"})
 public class RedirectController {
     private final UrlService urlService;
 

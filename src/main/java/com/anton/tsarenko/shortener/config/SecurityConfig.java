@@ -57,10 +57,13 @@ public class SecurityConfig {
     ) {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                "/api/v1/s_link/**",
                                 "/api/V1/s_link/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
