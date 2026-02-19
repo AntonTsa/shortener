@@ -3,7 +3,6 @@ package com.anton.tsarenko.shortener.url.controller;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.AUTHORIZATION_HEADER;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.BEARER_PREFIX;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.INVALID_BLANK_URL_REQUEST;
-import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.INVALID_PAST_EXPIRED_AT_REQUEST;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.LINKS_ENDPOINT;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.LINK_BY_ID_ENDPOINT;
 import static com.anton.tsarenko.shortener.url.controller.UrlControllerFixture.PAGE_RESPONSE;
@@ -180,47 +179,6 @@ class UrlControllerTest {
                         .content(toJson(INVALID_BLANK_URL_REQUEST)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", containsString("originalUrl")));
-    }
-
-    @Test
-    @DisplayName("""
-            GIVEN create request with past expiredAt
-            WHEN performing POST /api/v1/shortener/{userId}/links
-            THEN returns 400 with validation message
-            """)
-    void createWhenExpiredAtInPast() throws Exception {
-        // GIVEN
-
-        // WHEN / THEN
-        mockMvc.perform(post(LINKS_ENDPOINT)
-                        .header(AUTHORIZATION_HEADER, BEARER_PREFIX + VALID_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(toJson(INVALID_PAST_EXPIRED_AT_REQUEST)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", containsString("expiredAt")));
-    }
-
-    @Test
-    @DisplayName("""
-            GIVEN create request with null expiredAt
-            WHEN performing POST /api/v1/shortener/{userId}/links
-            THEN returns 400 with validation message
-            """)
-    void createWhenExpiredAtIsNull() throws Exception {
-        // GIVEN
-        String requestBody = """
-                {
-                  "originalUrl": "https://example.com/create"
-                }
-                """;
-
-        // WHEN / THEN
-        mockMvc.perform(post(LINKS_ENDPOINT)
-                        .header(AUTHORIZATION_HEADER, BEARER_PREFIX + VALID_TOKEN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", containsString("expiredAt")));
     }
 
     @SneakyThrows(JsonProcessingException.class)

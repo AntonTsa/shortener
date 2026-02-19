@@ -6,8 +6,10 @@ import com.anton.tsarenko.shortener.url.dto.UrlRequest;
 import com.anton.tsarenko.shortener.url.dto.UrlResponse;
 import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.mapper.UrlMapper;
+import java.time.Instant;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
+
 
 
 /**
@@ -20,7 +22,7 @@ public class UrlMapperImpl implements UrlMapper {
         return Url.builder()
                 .originalUrl(urlRequest.originalUrl())
                 .user(user)
-                .expiredAt(urlRequest.expiredAt())
+                .expiredAt(Instant.now())
                 .build();
     }
 

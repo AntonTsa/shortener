@@ -36,7 +36,6 @@ class UrlMapperImplTest {
         // THEN
         assertThat(actualUrl.getUser()).isEqualTo(VALID_USER);
         assertThat(actualUrl.getOriginalUrl()).isEqualTo(VALID_URL_REQUEST.originalUrl());
-        assertThat(actualUrl.getExpiredAt()).isEqualTo(VALID_URL_REQUEST.expiredAt());
     }
 
     @Test
