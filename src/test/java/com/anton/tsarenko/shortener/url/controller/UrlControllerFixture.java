@@ -51,6 +51,18 @@ class UrlControllerFixture {
             Instant.parse("2030-01-01T00:00:00Z")
     );
 
+    /** Invalid URL create request with blank original URL. */
+    static final UrlRequest INVALID_BLANK_URL_REQUEST = new UrlRequest(
+            " ",
+            Instant.parse("2030-01-01T00:00:00Z")
+    );
+
+    /** Invalid URL create request with past expiration timestamp. */
+    static final UrlRequest INVALID_PAST_EXPIRED_AT_REQUEST = new UrlRequest(
+            "https://example.com/create",
+            Instant.parse("2000-01-01T00:00:00Z")
+    );
+
     /** URL entity mapped from create request. */
     static final Url URL_TO_CREATE = Url.builder()
             .user(VALID_USER)

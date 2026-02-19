@@ -1,18 +1,23 @@
 package com.anton.tsarenko.shortener.url.service.impl;
 
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.CREATED_URL_ID;
+import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.ORIGINAL_URL;
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.PAGEABLE;
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.SAVED_URL;
+import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.SHORT_CODE;
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.URL_PAGE;
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.URL_TO_CREATE;
 import static com.anton.tsarenko.shortener.url.service.impl.UrlServiceImplFixture.VALID_USER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+import com.anton.tsarenko.shortener.exceptions.UrlNotFoundException;
 import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.repo.UrlRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,5 +89,43 @@ class UrlServiceImplTest {
 
         // THEN
         verify(urlRepository).deleteById(CREATED_URL_ID);
+    }
+
+    @Test
+    @DisplayName("""
+            GIVEN existing short code
+            WHEN resolveOriginalUrlAndIncreaseRedirectCount is called
+            THEN increments redirects and returns original url
+            """)
+    void resolveOriginalUrlAndIncreaseRedirectCountValid() {
+        // GIVEN
+        given(urlRepository.findByShortCode(SHORT_CODE)).willReturn(Optional.of(SAVED_URL));
+        given(urlRepository.save(SAVED_URL)).willReturn(SAVED_URL);
+
+        // WHEN
+        String actualOriginalUrl = urlService.resolveOriginalUrlAndIncreaseRedirectCount(
+                SHORT_CODE
+        );
+
+        // THEN
+        assertThat(actualOriginalUrl).isEqualTo(ORIGINAL_URL);
+        assertThat(SAVED_URL.getRedirectsCount()).isEqualTo(4L);
+        verify(urlRepository).save(SAVED_URL);
+    }
+
+    @Test
+    @DisplayName("""
+            GIVEN unknown short code
+            WHEN resolveOriginalUrlAndIncreaseRedirectCount is called
+            THEN throws UrlNotFoundException
+            """)
+    void resolveOriginalUrlAndIncreaseRedirectCountWhenShortCodeNotFound() {
+        // GIVEN
+        given(urlRepository.findByShortCode(SHORT_CODE)).willReturn(Optional.empty());
+
+        // WHEN / THEN
+        assertThatThrownBy(() -> urlService.resolveOriginalUrlAndIncreaseRedirectCount(SHORT_CODE))
+                .isInstanceOf(UrlNotFoundException.class)
+                .hasMessageContaining(SHORT_CODE);
     }
 }

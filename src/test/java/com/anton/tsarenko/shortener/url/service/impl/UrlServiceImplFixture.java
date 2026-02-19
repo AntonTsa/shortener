@@ -13,6 +13,12 @@ import org.springframework.data.domain.Pageable;
  * This class is a fixture for testing {@link UrlServiceImpl}.
  */
 class UrlServiceImplFixture {
+    /** Existing short code used in resolve tests. */
+    static final String SHORT_CODE = "abc123";
+
+    /** Original URL used in resolve tests. */
+    static final String ORIGINAL_URL = "https://example.com/create";
+
     /** Valid user for service tests. */
     static final User VALID_USER = User.builder()
             .id(1L)
@@ -26,7 +32,7 @@ class UrlServiceImplFixture {
     /** URL entity used as input in create scenario. */
     static final Url URL_TO_CREATE = Url.builder()
             .user(VALID_USER)
-            .originalUrl("https://example.com/create")
+            .originalUrl(ORIGINAL_URL)
             .expiredAt(Instant.parse("2030-01-01T00:00:00Z"))
             .build();
 
@@ -34,8 +40,9 @@ class UrlServiceImplFixture {
     static final Url SAVED_URL = Url.builder()
             .id(15L)
             .user(VALID_USER)
-            .originalUrl("https://example.com/create")
-            .shortCode("abc123")
+            .originalUrl(ORIGINAL_URL)
+            .shortCode(SHORT_CODE)
+            .redirectsCount(3L)
             .expiredAt(Instant.parse("2030-01-01T00:00:00Z"))
             .createdAt(Instant.parse("2026-01-01T00:00:00Z"))
             .build();

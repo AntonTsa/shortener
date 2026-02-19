@@ -32,4 +32,12 @@ public interface UrlService {
      * @param id - The unique identifier of the URL to be deleted.
      */
     void deleteUrl(Long id);
+
+    /**
+     * Finds URL by short code, increments redirect count and returns original URL.
+     *
+     * @param shortCode - The short code to resolve.
+     * @return - The original URL.
+     */
+    String resolveOriginalUrlAndIncreaseRedirectCount(String shortCode);
 }

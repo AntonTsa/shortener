@@ -9,6 +9,7 @@ import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.mapper.UrlMapper;
 import com.anton.tsarenko.shortener.url.service.UrlService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -65,7 +66,13 @@ public class UrlController {
     })
     @PostMapping
     public ResponseEntity<URI> create(
+            @Parameter(description = "User ID owner of the URL", example = "1")
             @PathVariable @Positive Long userId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "URL payload to shorten",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = UrlRequest.class))
+            )
             @Valid @RequestBody UrlRequest urlRequest,
             HttpServletRequest httpServletRequest
     ) {
@@ -101,6 +108,7 @@ public class UrlController {
     })
     @GetMapping
     public ResponseEntity<PageResponse<UrlResponse>> getAllUrls(
+            @Parameter(description = "User ID owner of URLs", example = "1")
             @PathVariable @Positive Long userId,
             @PageableDefault(size = 3)
             @SortDefault.SortDefaults(
@@ -130,7 +138,9 @@ public class UrlController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(
+            @Parameter(description = "User ID owner of the URL", example = "1")
             @PathVariable @Positive Long userId,
+            @Parameter(description = "URL entity ID to delete", example = "10")
             @PathVariable @Positive Long id
     ) {
         userService.getUserById(userId);

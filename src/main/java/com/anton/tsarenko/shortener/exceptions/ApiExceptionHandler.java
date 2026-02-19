@@ -96,6 +96,24 @@ public class ApiExceptionHandler {
     }
 
     /**
+     * Exception handler for URL by short code not found.
+     *
+     * @param exception {@link UrlNotFoundException} to catch and return not found status
+     * @return {@link ResponseEntity} with status {@link HttpStatus#NOT_FOUND}
+     */
+    @ExceptionHandler
+    @SuppressWarnings("unused")
+    public ResponseEntity<ExceptionResponse> handleBindException(
+            UrlNotFoundException exception
+    ) {
+        return map(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage(),
+                exception
+        );
+    }
+
+    /**
      * Global exception Handler.
      *
      * @param exception - exception
