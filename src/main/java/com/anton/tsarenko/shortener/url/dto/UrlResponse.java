@@ -30,8 +30,12 @@ public record UrlResponse(
         Long redirectsCount,
         @Schema(description = "Generated short code", example = "aB12xYz9")
         String shortCode,
-        @Schema(description = "Expiration timestamp in UTC ISO-8601 format", example = "2030-01-01T00:00:00Z")
+        @Schema(
+                description = "Expiration timestamp in UTC ISO-8601 format",
+                example = "2030-01-01T00:00:00Z")
         Instant expiredAt,
-        @Schema(description = "Creation timestamp in UTC ISO-8601 format", example = "2026-02-19T19:30:00Z")
+        @Schema(
+                description = "Creation timestamp in UTC ISO-8601 format",
+                example = "2026-02-19T19:30:00Z")
         Instant createdAt
 ) implements Serializable {}
