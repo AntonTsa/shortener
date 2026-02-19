@@ -8,6 +8,12 @@ import com.anton.tsarenko.shortener.url.dto.UrlResponse;
 import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.mapper.UrlMapper;
 import com.anton.tsarenko.shortener.url.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -23,7 +29,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Controller class for handling URL-related HTTP requests.
  */
+@Tag(name = "Urls", description = "Endpoints for managing shortened URLs")
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -43,11 +49,20 @@ public class UrlController {
     /**
      * Handles the creation of a new URL.
      *
-     * @param userId              the ID of the user creating the URL
-     * @param urlRequest          the request body containing URL details
-     * @param httpServletRequest  the HTTP servlet request for building the URI
+     * @param userId the ID of the user creating the URL
+     * @param urlRequest the request body containing URL details
+     * @param httpServletRequest the HTTP servlet request for building the URI
      * @return a ResponseEntity containing the URI of the created URL
      */
+    @Operation(
+            summary = "Create URL",
+            description = "Creates a shortened URL for the specified user."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "URL created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @PostMapping
     public ResponseEntity<URI> create(
             @PathVariable @Positive Long userId,
@@ -68,10 +83,22 @@ public class UrlController {
     /**
      * Retrieves URLs by ID of the user.
      *
-     * @param userId - The ID of the user to whom the URL belongs
-     * @param pageable -Tthe pagination and sorting information
+     * @param userId The ID of the user to whom the URL belongs
+     * @param pageable the pagination and sorting information
      * @return a ResponseEntity containing the URL details
      */
+    @Operation(
+            summary = "Get all URLs",
+            description = "Returns a paginated list of URLs belonging to the specified user."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "URLs returned",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @GetMapping
     public ResponseEntity<PageResponse<UrlResponse>> getAllUrls(
             @PathVariable @Positive Long userId,
@@ -87,37 +114,26 @@ public class UrlController {
     }
 
     /**
-     * Updates an existing URL.
-     *
-     * @param userId     the ID of the user to whom the URL belongs
-     * @param id         the ID of the URL to update
-     * @param urlRequest the request body containing updated URL details
-     * @return a ResponseEntity with no content
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUrl(
-            @PathVariable @Positive Long userId,
-            @PathVariable @Positive long id,
-            @Valid @RequestBody UrlRequest urlRequest
-    ) {
-        User user = userService.getUserById(userId);
-        urlService.replaceUrl(id, mapper.toUrl(urlRequest, user));
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
      * Deletes a URL by its ID.
      *
      * @param userId the ID of the user to whom the URL belongs
-     * @param id     the ID of the URL to delete
+     * @param id the ID of the URL to delete
      * @return a ResponseEntity with no content
      */
+    @Operation(
+            summary = "Delete URL",
+            description = "Deletes a URL for the specified user."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "URL deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(
             @PathVariable @Positive Long userId,
             @PathVariable @Positive Long id
     ) {
-        User user = userService.getUserById(userId);
+        userService.getUserById(userId);
         urlService.deleteUrl(id);
         return ResponseEntity.noContent().build();
     }

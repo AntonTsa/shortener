@@ -19,4 +19,12 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
      * @return - A paginated list of Urls associated with the specified user.
      */
     Page<Url> findAllByUser(User user, Pageable pageable);
+
+    /**
+     * Checks if Url with the short code exists.
+     *
+     * @param shortCode - The short code
+     * @return - true if a url with the given shortcode exists, false otherwise
+     */
+    boolean existsByShortCode(String shortCode);
 }

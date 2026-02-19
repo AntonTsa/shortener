@@ -27,14 +27,6 @@ public interface UrlService {
     Page<Url> retrieveAllUrlsByUser(User user, Pageable pageable);
 
     /**
-     * Replaces a URL by its unique ID.
-     *
-     * @param id - The unique identifier of the URL to be retrieved.
-     * @param url - The URL entity containing the updated information to replace the existing URL.
-     */
-    void replaceUrl(Long id, Url url);
-
-    /**
      * Deletes a URL by its unique ID.
      *
      * @param id - The unique identifier of the URL to be deleted.

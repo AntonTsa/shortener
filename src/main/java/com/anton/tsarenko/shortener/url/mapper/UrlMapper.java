@@ -14,7 +14,7 @@ public interface UrlMapper {
     /**
      * Converts a UrlRequest DTO to a Url entity.
      *
-     * @param urlRequest - The UrlRequest DTO to convert
+     * @param urlRequest - The UrlUpdateRequest DTO to convert
      * @param user - The User entity associated with the Url
      * @return - The corresponding Url entity
      */

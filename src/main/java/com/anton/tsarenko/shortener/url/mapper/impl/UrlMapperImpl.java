@@ -9,6 +9,7 @@ import com.anton.tsarenko.shortener.url.mapper.UrlMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Implementation of the UrlMapper interface for mapping between Url entities and DTOs.
  */
@@ -18,7 +19,6 @@ public class UrlMapperImpl implements UrlMapper {
     public Url toUrl(UrlRequest urlRequest, User user) {
         return Url.builder()
                 .originalUrl(urlRequest.originalUrl())
-                .shortCode(urlRequest.shortCode())
                 .user(user)
                 .expiredAt(urlRequest.expiredAt())
                 .build();
