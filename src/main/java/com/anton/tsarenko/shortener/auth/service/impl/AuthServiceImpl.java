@@ -1,9 +1,6 @@
 package com.anton.tsarenko.shortener.auth.service.impl;
 
-import com.anton.tsarenko.shortener.auth.dto.AuthRequest;
-import com.anton.tsarenko.shortener.auth.dto.AuthResponse;
 import com.anton.tsarenko.shortener.auth.entity.User;
-import com.anton.tsarenko.shortener.auth.mapper.UserMapper;
 import com.anton.tsarenko.shortener.auth.repo.UsersRepository;
 import com.anton.tsarenko.shortener.auth.service.AuthService;
 import com.anton.tsarenko.shortener.auth.service.JwtService;
@@ -24,34 +21,31 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final UserMapper userMapper;
     private final UsersRepository usersRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
     @Override
-    public void register(AuthRequest request) {
-        if (usersRepository.existsByUsername(request.username())) {
-            throw new UserAlreadyExistsException(request.username());
+    public void register(User user) {
+        if (usersRepository.existsByUsername(user.getUsername())) {
+            throw new UserAlreadyExistsException(user.getUsername());
         }
-
-        User user = userMapper.toUser(request);
 
         usersRepository.save(user);
     }
 
     @Override
-    public AuthResponse login(AuthRequest request) {
+    public String login(User user) {
 
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.username(),
-                            request.password())
+                            user.getUsername(),
+                            user.getPasswordHash())
             );
 
-            return new AuthResponse(
-                    jwtService.generateAccessToken(authentication.getName()));
+            return
+                    jwtService.generateAccessToken(authentication.getName());
         } catch (AuthenticationException e) {
             throw new BadCredentialsException("Invalid username or password");
         }

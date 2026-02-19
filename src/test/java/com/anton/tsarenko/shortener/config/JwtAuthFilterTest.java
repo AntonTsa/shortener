@@ -1,5 +1,7 @@
 package com.anton.tsarenko.shortener.config;
 
+import static com.anton.tsarenko.shortener.config.JwtAuthFilterFixture.TOKEN;
+import static com.anton.tsarenko.shortener.config.JwtAuthFilterFixture.USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -9,6 +11,7 @@ import com.anton.tsarenko.shortener.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,14 +27,23 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 @ExtendWith(MockitoExtension.class)
 class JwtAuthFilterTest {
-    private static final String TOKEN = "test-token";
-    private static final String USERNAME = "TestUser12";
 
     @Mock
     private JwtService jwtService;
 
     @Mock
     private FilterChain filterChain;
+
+    private JwtAuthFilter filter;
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
+
+    @BeforeEach
+    public void setup() {
+        filter = new JwtAuthFilter(jwtService);
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
+    }
 
     @AfterEach
     void clearSecurityContext() {
@@ -44,12 +56,8 @@ class JwtAuthFilterTest {
             WHEN filter is invoked
             THEN it continues chain without JWT processing
             """)
-    void givenRequestWithoutAuthorization_whenFilterInvoked_thenContinuesChain() throws Exception {
+    void filterWithoutAuthorizationHeader() throws Exception {
         // GIVEN
-        JwtAuthFilter filter = new JwtAuthFilter(jwtService);
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
         // WHEN
         filter.doFilterInternal(request, response, filterChain);
 
@@ -66,12 +74,9 @@ class JwtAuthFilterTest {
             WHEN filter is invoked
             THEN it continues chain without JWT processing
             """)
-    void givenRequestWithNonBearerHeader_whenFilterInvoked_thenContinuesChain() throws Exception {
+    void filterNonBearerAuthorizationHeader() throws Exception {
         // GIVEN
-        JwtAuthFilter filter = new JwtAuthFilter(jwtService);
-        MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Basic abc123");
-        MockHttpServletResponse response = new MockHttpServletResponse();
 
         // WHEN
         filter.doFilterInternal(request, response, filterChain);
@@ -89,12 +94,9 @@ class JwtAuthFilterTest {
             WHEN filter is invoked
             THEN it continues chain and does not authenticate user
             """)
-    void givenRequestWithInvalidToken_whenFilterInvoked_thenNoAuthenticationSet() throws Exception {
+    void filterInvalidToken() throws Exception {
         // GIVEN
-        JwtAuthFilter filter = new JwtAuthFilter(jwtService);
-        MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer " + TOKEN);
-        MockHttpServletResponse response = new MockHttpServletResponse();
         given(jwtService.isTokenValid(TOKEN)).willReturn(false);
 
         // WHEN
@@ -113,18 +115,14 @@ class JwtAuthFilterTest {
             WHEN filter is invoked
             THEN it authenticates user with ROLE_USER and continues chain
             """)
-    void givenValidTokenAndEmptyContext_whenFilterInvoked_thenSetsAuthentication()
-            throws Exception {
+    void filterValidTokenAndEmptyContext() throws Exception {
         // GIVEN
-        MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer " + TOKEN);
-        MockHttpServletResponse response = new MockHttpServletResponse();
 
         given(jwtService.isTokenValid(TOKEN)).willReturn(true);
         given(jwtService.extractUsername(TOKEN)).willReturn(USERNAME);
 
         // WHEN
-        JwtAuthFilter filter = new JwtAuthFilter(jwtService);
         filter.doFilterInternal(request, response, filterChain);
 
         // THEN
@@ -133,6 +131,7 @@ class JwtAuthFilterTest {
         verify(filterChain).doFilter(request, response);
 
         var authentication = SecurityContextHolder.getContext().getAuthentication();
+
         assertThat(authentication).isNotNull();
         assertThat(authentication.getName()).isEqualTo(USERNAME);
         assertThat(authentication.getAuthorities())
@@ -146,10 +145,8 @@ class JwtAuthFilterTest {
             WHEN filter is invoked
             THEN it keeps existing authentication and continues chain
             """)
-    void givenValidTokenAndExistingAuth_whenFilterInvoked_thenKeepsExistingAuthentication()
-            throws Exception {
+    void filterValidTokenAndExistingAuthentication() throws Exception {
         // GIVEN
-        MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer " + TOKEN);
 
         var existingAuthentication = new UsernamePasswordAuthenticationToken(
@@ -163,8 +160,6 @@ class JwtAuthFilterTest {
         given(jwtService.extractUsername(TOKEN)).willReturn(USERNAME);
 
         // WHEN
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        JwtAuthFilter filter = new JwtAuthFilter(jwtService);
         filter.doFilterInternal(request, response, filterChain);
 
         // THEN

@@ -55,7 +55,7 @@ class SecurityConfigTest {
             WHEN passwordEncoder bean is created
             THEN it encodes and matches the raw password
             """)
-    void givenSecurityConfig_whenPasswordEncoderCreated_thenEncodesAndMatchesPassword() {
+    void securityConfig_PasswordEncoderCreated() {
         // GIVEN
         String rawPassword = "password123";
 
@@ -75,7 +75,7 @@ class SecurityConfigTest {
             WHEN userDetailsService bean is created
             THEN returns JdbcUserDetailsManager with expected queries
             """)
-    void givenDataSource_whenUserDetailsServiceCreated_thenReturnsJdbcManagerWithQueries() {
+    void dataSource_UserDetailsServiceCreated() {
         // GIVEN
 
         // WHEN
@@ -109,7 +109,7 @@ class SecurityConfigTest {
             WHEN authenticationManager bean is created
             THEN returns manager from AuthenticationConfiguration
             """)
-    void givenAuthenticationConfiguration_whenAuthenticationManagerCreated_thenReturnsExpected() {
+    void authenticationConfiguration_AuthenticationManagerCreated() {
         // GIVEN
         given(authenticationConfiguration.getAuthenticationManager())
                 .willReturn(authenticationManager);
@@ -128,7 +128,7 @@ class SecurityConfigTest {
             WHEN securityFilterChain bean is created
             THEN configures chain and returns built SecurityFilterChain
             """)
-    void givenHttpSecurity_whenSecurityFilterChainCreated_thenReturnsBuiltChain() {
+    void httpSecurity_SecurityFilterChainCreated() {
         // GIVEN
         given(httpSecurity.csrf(any())).willReturn(httpSecurity);
         given(httpSecurity.sessionManagement(any())).willReturn(httpSecurity);

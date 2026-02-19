@@ -2,6 +2,8 @@ package com.anton.tsarenko.shortener.auth.controller;
 
 import com.anton.tsarenko.shortener.auth.dto.AuthRequest;
 import com.anton.tsarenko.shortener.auth.dto.AuthResponse;
+import com.anton.tsarenko.shortener.auth.entity.User;
+import com.anton.tsarenko.shortener.auth.mapper.UserMapper;
 import com.anton.tsarenko.shortener.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final UserMapper mapper;
 
     /**
      * Endpoint for user registration.
@@ -48,7 +51,10 @@ public class AuthController {
     public ResponseEntity<Void> register(
             @RequestBody @Valid AuthRequest authRequest
     ) {
-        authService.register(authRequest);
+        User user = mapper.toUser(authRequest);
+
+        authService.register(user);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .build();
@@ -74,6 +80,10 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+        User user = mapper.toUser(request);
+
+        AuthResponse authResponse = new AuthResponse(authService.login(user));
+
+        return ResponseEntity.ok(authResponse);
     }
 }

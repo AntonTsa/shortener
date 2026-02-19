@@ -1,7 +1,6 @@
 package com.anton.tsarenko.shortener.auth.service;
 
-import com.anton.tsarenko.shortener.auth.dto.AuthRequest;
-import com.anton.tsarenko.shortener.auth.dto.AuthResponse;
+import com.anton.tsarenko.shortener.auth.entity.User;
 
 /**
  * Service interface for handling authentication-related operations such as
@@ -12,16 +11,16 @@ public interface AuthService {
     /**
      * Registers a new user based on the provided registration request.
      *
-     * @param request the registration request containing user details
+     * @param user user details
      */
-    void register(AuthRequest request);
+    void register(User user);
 
     /**
      * Logins a new user based on the provided login request.
      *
-     * @param request the login request containing user details
+     * @param user user details
      * @return login response
      */
-    AuthResponse login(AuthRequest request);
+    String login(User user);
 
 }

@@ -5,11 +5,14 @@ import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.EXISTED_USERNAME;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.EXISTED_USERNAME_AUTH_REQUEST;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.EXISTED_USERNAME_MESSAGE;
+import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.EXISTED_USERNAME_USER;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.INVALID_AUTH_REQUEST;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.LOGIN_ENDPOINT;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.REGISTRATION_ENDPOINT;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.VALID_AUTH_REQUEST;
 import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.VALID_AUTH_RESPONSE;
+import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.VALID_TOKEN;
+import static com.anton.tsarenko.shortener.auth.controller.AuthControllerFixture.VALID_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,10 +23,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.anton.tsarenko.shortener.PostgresTestContainer;
-import com.anton.tsarenko.shortener.auth.dto.AuthRequest;
 import com.anton.tsarenko.shortener.auth.dto.AuthResponse;
 import com.anton.tsarenko.shortener.auth.dto.ExceptionResponse;
+import com.anton.tsarenko.shortener.auth.entity.User;
+import com.anton.tsarenko.shortener.auth.mapper.UserMapper;
 import com.anton.tsarenko.shortener.auth.service.AuthService;
 import com.anton.tsarenko.shortener.auth.service.JwtService;
 import com.anton.tsarenko.shortener.exceptions.UserAlreadyExistsException;
@@ -56,7 +59,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @WebMvcTest(controllers = AuthController.class)
 @ActiveProfiles("test")
-class AuthControllerTest extends PostgresTestContainer {
+class AuthControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -66,19 +69,23 @@ class AuthControllerTest extends PostgresTestContainer {
     @MockitoBean(answers = Answers.RETURNS_SMART_NULLS)
     private JwtService jwtService;
 
+    @MockitoBean(answers = Answers.RETURNS_SMART_NULLS)
+    private UserMapper userMapper;
+
     private final ObjectMapper objectMapper = JsonMapper.builder()
             .addModule(new JavaTimeModule())
             .build();
 
     @Test
     @DisplayName("""
-            GIVEN valid registration payload
-            WHEN POST /registration
+            GIVEN valid AuthRequest object
+            WHEN performing POST /registration
             THEN returns 201 with empty body
             """)
-    void givenValidRegistration_whenPostRegistration_thenCreated() throws Exception {
+    void registrationValid() throws Exception {
         // GIVEN
-        doNothing().when(authService).register(VALID_AUTH_REQUEST);
+        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
+        doNothing().when(authService).register(VALID_USER);
 
         // WHEN
         MockHttpServletResponse actualResponse =
@@ -96,14 +103,15 @@ class AuthControllerTest extends PostgresTestContainer {
 
     @Test
     @DisplayName("""
-            GIVEN existing username
-            WHEN POST /registration
+            GIVEN valid AuthRequest object, containing existing username
+            WHEN performing POST /registration
             THEN returns 409 and corresponding error
             """)
-    void givenExistingUsername_whenPostRegistration_thenConflict() throws Exception {
+    void registrationExistingUsername() throws Exception {
         // GIVEN
+        given(userMapper.toUser(EXISTED_USERNAME_AUTH_REQUEST)).willReturn(EXISTED_USERNAME_USER);
         doThrow(new UserAlreadyExistsException(EXISTED_USERNAME))
-                .when(authService).register(EXISTED_USERNAME_AUTH_REQUEST);
+                .when(authService).register(EXISTED_USERNAME_USER);
 
         // WHEN
         ExceptionResponse actualResponse = fromJson(
@@ -125,9 +133,9 @@ class AuthControllerTest extends PostgresTestContainer {
     @DisplayName("""
             GIVEN invalid registration payload
             WHEN POST /registration
-            THEN returns 400 and corresponding error
+            THEN returns 400 and message "Bad Request" with details about validation errors
             """)
-    void givenInvalidRegistration_whenPostRegistration_thenBadRequest() throws Exception {
+    void registrationInvalid() throws Exception {
         // GIVEN
 
         // WHEN
@@ -149,12 +157,12 @@ class AuthControllerTest extends PostgresTestContainer {
     @Test
     @DisplayName("""
             GIVEN auth service throws runtime exception
-            WHEN POST /registration
+            WHEN performing POST /registration
             THEN returns 500 and corresponding error
             """)
-    void registration_runtimeException_returnsInternalServerError() throws Exception {
+    void registrationRuntimeException() throws Exception {
         // GIVEN
-        doThrow(new RuntimeException("boom")).when(authService).register(any(AuthRequest.class));
+        doThrow(new RuntimeException("boom")).when(authService).register(any(User.class));
 
         // WHEN
         mockMvc.perform(post("/api/v1/auth/registration")
@@ -169,13 +177,14 @@ class AuthControllerTest extends PostgresTestContainer {
 
     @Test
     @DisplayName("""
-            GIVEN valid login payload
-            WHEN POST /login
+            GIVEN valid AuthRequest object
+            WHEN performing POST /login
             THEN returns 200 and accessToken in body
             """)
-    void givenValidLogin_whenPostLogin_thenOkAndToken() throws Exception {
+    void loginValid() throws Exception {
         // GIVEN
-        given(authService.login(VALID_AUTH_REQUEST)).willReturn(VALID_AUTH_RESPONSE);
+        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
+        given(authService.login(VALID_USER)).willReturn(VALID_TOKEN);
 
         // WHEN
         AuthResponse actualResponse = fromJson(
@@ -194,14 +203,15 @@ class AuthControllerTest extends PostgresTestContainer {
 
     @Test
     @DisplayName("""
-            GIVEN bad credentials
-            WHEN POST /login
-            THEN returns 401 and service called
+            GIVEN valid AuthRequest object with bad credentials
+            WHEN performing POST /login
+            THEN returns 401 and "Bad Credentials" message
             """)
-    void givenBadCredentials_whenPostLogin_thenUnauthorized() throws Exception {
+    void loginBadCredentials() throws Exception {
         // GIVEN
+        given(userMapper.toUser(VALID_AUTH_REQUEST)).willReturn(VALID_USER);
         doThrow(new BadCredentialsException(BAD_CREDENTIALS_MESSAGE))
-                .when(authService).login(VALID_AUTH_REQUEST);
+                .when(authService).login(VALID_USER);
 
         // WHEN
         ExceptionResponse actualResponse = fromJson(mockMvc.perform(post(LOGIN_ENDPOINT)
@@ -218,11 +228,11 @@ class AuthControllerTest extends PostgresTestContainer {
 
     @Test
     @DisplayName("""
-            GIVEN invalid login payload
-            WHEN POST /login
-            THEN returns 400 and service not called
+            GIVEN invalid AuthRequest object
+            WHEN performing POST /login
+            THEN returns 400 and message "Bad Request" with details about validation errors
             """)
-    void givenInvalidLogin_whenPostLogin_thenBadRequest() throws Exception {
+    void loginInvalid() throws Exception {
         // GIVEN
 
         // WHEN

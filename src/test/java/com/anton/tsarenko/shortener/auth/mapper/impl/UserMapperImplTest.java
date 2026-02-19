@@ -1,5 +1,8 @@
 package com.anton.tsarenko.shortener.auth.mapper.impl;
 
+import static com.anton.tsarenko.shortener.auth.mapper.impl.UserMapperImplFixture.ENCODED_PASSWORD;
+import static com.anton.tsarenko.shortener.auth.mapper.impl.UserMapperImplFixture.RAW_PASSWORD;
+import static com.anton.tsarenko.shortener.auth.mapper.impl.UserMapperImplFixture.USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -18,10 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @ExtendWith(MockitoExtension.class)
 class UserMapperImplTest {
-    private static final String USERNAME = "TestUser12";
-    private static final String RAW_PASSWORD = "password";
-    private static final String ENCODED_PASSWORD = "encoded-password";
-
     @Mock
     private PasswordEncoder passwordEncoder;
 

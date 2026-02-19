@@ -1,9 +1,11 @@
 package com.anton.tsarenko.shortener.auth.service;
 
+import static com.anton.tsarenko.shortener.auth.service.JwtServiceFixture.EXPIRATION_IN_MINUTES;
+import static com.anton.tsarenko.shortener.auth.service.JwtServiceFixture.SECRET_KEY;
+import static com.anton.tsarenko.shortener.auth.service.JwtServiceFixture.USERNAME;
 import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.anton.tsarenko.shortener.PostgresTestContainer;
 import com.anton.tsarenko.shortener.auth.service.impl.JwtServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,10 +17,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for {@link JwtServiceImpl}.
  */
-class JwtServiceTest extends PostgresTestContainer {
-    private static final String SECRET_KEY = "test-test-test-test-test-test-test-test";
-    private static final long EXPIRATION_IN_MINUTES = 30L;
-    private static final String USERNAME = "TestUser12";
+class JwtServiceTest {
 
     private final JwtService jwtService = new JwtServiceImpl(SECRET_KEY, EXPIRATION_IN_MINUTES);
 
@@ -28,7 +27,7 @@ class JwtServiceTest extends PostgresTestContainer {
             WHEN generateAccessToken is called
             THEN returns signed token with username and USER role claim
             """)
-    void givenValidUsername_whenGenerateAccessToken_thenReturnsTokenWithClaims() {
+    void generateAccessTokenValid() {
         // GIVEN
         SecretKey key = hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
@@ -49,11 +48,11 @@ class JwtServiceTest extends PostgresTestContainer {
 
     @Test
     @DisplayName("""
-            GIVEN generated token
+            GIVEN valid generated token
             WHEN extractUsername is called
             THEN returns username from token
             """)
-    void givenGeneratedToken_whenExtractUsername_thenReturnsUsername() {
+    void extractUsernameValid() {
         // GIVEN
         String token = jwtService.generateAccessToken(USERNAME);
 
@@ -70,7 +69,7 @@ class JwtServiceTest extends PostgresTestContainer {
             WHEN isTokenValid is called
             THEN returns true
             """)
-    void givenValidToken_whenIsTokenValid_thenReturnsTrue() {
+    void isTokenValid_Valid() {
         // GIVEN
         String token = jwtService.generateAccessToken(USERNAME);
 
@@ -87,7 +86,7 @@ class JwtServiceTest extends PostgresTestContainer {
             WHEN isTokenValid is called
             THEN returns false
             """)
-    void givenMalformedToken_whenIsTokenValid_thenReturnsFalse() {
+    void isTokenValid_Malformed() {
         // GIVEN
         String malformedToken = "not-a-jwt-token";
 
@@ -104,7 +103,7 @@ class JwtServiceTest extends PostgresTestContainer {
             WHEN isTokenValid is called
             THEN returns false
             """)
-    void givenTokenWithAnotherSecret_whenIsTokenValid_thenReturnsFalse() {
+    void isTokenValid_TokenWithAnotherSecret() {
         // GIVEN
         JwtService anotherJwtService = new JwtServiceImpl(
                 "another-another-another-another-another12",
@@ -124,7 +123,7 @@ class JwtServiceTest extends PostgresTestContainer {
             WHEN isTokenValid is called
             THEN returns false
             """)
-    void givenExpiredToken_whenIsTokenValid_thenReturnsFalse() {
+    void isTokenValid_ExpiredToken() {
         // GIVEN
         JwtService expiredJwtService = new JwtServiceImpl(SECRET_KEY, -1L);
         String expiredToken = expiredJwtService.generateAccessToken(USERNAME);
