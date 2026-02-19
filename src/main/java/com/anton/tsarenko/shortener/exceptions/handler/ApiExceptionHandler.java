@@ -1,6 +1,8 @@
-package com.anton.tsarenko.shortener.exceptions;
+package com.anton.tsarenko.shortener.exceptions.handler;
 
-import com.anton.tsarenko.shortener.auth.dto.ExceptionResponse;
+import com.anton.tsarenko.shortener.exceptions.custom.UrlNotFoundException;
+import com.anton.tsarenko.shortener.exceptions.custom.UserAlreadyExistsException;
+import com.anton.tsarenko.shortener.exceptions.dto.ExceptionResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;

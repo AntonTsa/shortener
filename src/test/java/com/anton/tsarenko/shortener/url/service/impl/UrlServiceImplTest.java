@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.anton.tsarenko.shortener.exceptions.UrlNotFoundException;
+import com.anton.tsarenko.shortener.exceptions.custom.UrlNotFoundException;
 import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.repo.UrlRepository;
 import java.util.Optional;

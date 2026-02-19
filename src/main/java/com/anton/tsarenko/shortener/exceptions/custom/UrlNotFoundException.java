@@ -1,4 +1,4 @@
-package com.anton.tsarenko.shortener.exceptions;
+package com.anton.tsarenko.shortener.exceptions.custom;
 
 /**
  * Exception thrown when URL by short code is not found.

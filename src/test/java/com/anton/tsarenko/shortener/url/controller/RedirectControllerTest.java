@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.anton.tsarenko.shortener.auth.service.JwtService;
-import com.anton.tsarenko.shortener.exceptions.UrlNotFoundException;
+import com.anton.tsarenko.shortener.exceptions.custom.UrlNotFoundException;
 import com.anton.tsarenko.shortener.url.service.UrlService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

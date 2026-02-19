@@ -24,12 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.anton.tsarenko.shortener.auth.dto.AuthResponse;
-import com.anton.tsarenko.shortener.auth.dto.ExceptionResponse;
 import com.anton.tsarenko.shortener.auth.entity.User;
 import com.anton.tsarenko.shortener.auth.mapper.UserMapper;
 import com.anton.tsarenko.shortener.auth.service.AuthService;
 import com.anton.tsarenko.shortener.auth.service.JwtService;
-import com.anton.tsarenko.shortener.exceptions.UserAlreadyExistsException;
+import com.anton.tsarenko.shortener.exceptions.custom.UserAlreadyExistsException;
+import com.anton.tsarenko.shortener.exceptions.dto.ExceptionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

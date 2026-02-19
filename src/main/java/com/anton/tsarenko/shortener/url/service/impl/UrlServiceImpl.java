@@ -3,7 +3,7 @@ package com.anton.tsarenko.shortener.url.service.impl;
 import static com.anton.tsarenko.shortener.url.util.ShortUrlGenerator.generateShortCode;
 
 import com.anton.tsarenko.shortener.auth.entity.User;
-import com.anton.tsarenko.shortener.exceptions.UrlNotFoundException;
+import com.anton.tsarenko.shortener.exceptions.custom.UrlNotFoundException;
 import com.anton.tsarenko.shortener.url.entity.Url;
 import com.anton.tsarenko.shortener.url.repo.UrlRepository;
 import com.anton.tsarenko.shortener.url.service.UrlService;

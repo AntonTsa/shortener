@@ -1,4 +1,4 @@
-package com.anton.tsarenko.shortener.exceptions;
+package com.anton.tsarenko.shortener.exceptions.custom;
 
 /**
  * Exception thrown when trying to create a user with a username that already exists.

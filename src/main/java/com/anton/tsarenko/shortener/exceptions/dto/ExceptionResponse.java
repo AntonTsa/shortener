@@ -1,4 +1,4 @@
-package com.anton.tsarenko.shortener.auth.dto;
+package com.anton.tsarenko.shortener.exceptions.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;

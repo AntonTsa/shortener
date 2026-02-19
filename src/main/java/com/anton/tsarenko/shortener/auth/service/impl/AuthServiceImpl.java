@@ -4,7 +4,7 @@ import com.anton.tsarenko.shortener.auth.entity.User;
 import com.anton.tsarenko.shortener.auth.repo.UsersRepository;
 import com.anton.tsarenko.shortener.auth.service.AuthService;
 import com.anton.tsarenko.shortener.auth.service.JwtService;
-import com.anton.tsarenko.shortener.exceptions.UserAlreadyExistsException;
+import com.anton.tsarenko.shortener.exceptions.custom.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
