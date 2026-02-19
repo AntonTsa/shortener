@@ -1,6 +1,10 @@
 package com.anton.tsarenko.shortener.url.controller;
 
 import com.anton.tsarenko.shortener.url.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,8 +29,19 @@ public class RedirectController {
      * @param shortCode short code value
      * @return redirect response with location header
      */
+    @Operation(
+            summary = "Redirect by short code",
+            description = "Resolves a short code to the original URL and "
+                    + "returns HTTP 302 with Location header."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "302", description = "Redirect response with Location header"),
+            @ApiResponse(responseCode = "404", description = "Short code not found")
+    })
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirectByShortCode(
+            @Parameter(description = "Short code to resolve", example = "aB12xYz9")
             @PathVariable String shortCode
     ) {
         String originalUrl = urlService.resolveOriginalUrlAndIncreaseRedirectCount(shortCode);
