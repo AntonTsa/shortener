@@ -46,7 +46,7 @@ class UrlServiceImplTest {
             """)
     void createUrlValid() {
         // GIVEN
-        given(urlRepository.existsByShortCode(anyString())).willReturn(true);
+        given(urlRepository.existsByShortCode(anyString())).willReturn(false);
         given(urlRepository.save(URL_TO_CREATE)).willReturn(SAVED_URL);
 
         // WHEN

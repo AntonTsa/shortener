@@ -11,5 +11,5 @@ class RedirectControllerFixture {
     static final String ORIGINAL_URL = "https://example.com/landing";
 
     /** Redirect endpoint by short code. */
-    static final String REDIRECT_ENDPOINT = "/api/V1/s_link/" + SHORT_CODE;
+    static final String REDIRECT_ENDPOINT = "/api/v1/s_link/" + SHORT_CODE;
 }

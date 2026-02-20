@@ -44,7 +44,7 @@ class RedirectControllerTest {
     @Test
     @DisplayName("""
             GIVEN existing short code
-            WHEN performing GET /api/V1/s_link/{shortCode}
+            WHEN performing GET /api/v1/s_link/{shortCode}
             THEN returns 302 with Location header to original URL
             """)
     void redirectByShortCodeValid() throws Exception {
@@ -63,7 +63,7 @@ class RedirectControllerTest {
     @Test
     @DisplayName("""
             GIVEN unknown short code
-            WHEN performing GET /api/V1/s_link/{shortCode}
+            WHEN performing GET /api/v1/s_link/{shortCode}
             THEN returns 404
             """)
     void redirectByShortCodeWhenShortCodeNotFound() throws Exception {
