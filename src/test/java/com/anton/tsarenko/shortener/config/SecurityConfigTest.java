@@ -131,6 +131,8 @@ class SecurityConfigTest {
     void httpSecurity_SecurityFilterChainCreated() {
         // GIVEN
         given(httpSecurity.csrf(any())).willReturn(httpSecurity);
+        given(httpSecurity.httpBasic(any())).willReturn(httpSecurity);
+        given(httpSecurity.formLogin(any())).willReturn(httpSecurity);
         given(httpSecurity.sessionManagement(any())).willReturn(httpSecurity);
         given(httpSecurity.authorizeHttpRequests(any())).willReturn(httpSecurity);
         given(httpSecurity.addFilterBefore(
@@ -146,6 +148,8 @@ class SecurityConfigTest {
         // THEN
         assertThat(actualChain).isSameAs(securityFilterChain);
         verify(httpSecurity).csrf(any());
+        verify(httpSecurity).httpBasic(any());
+        verify(httpSecurity).formLogin(any());
         verify(httpSecurity).sessionManagement(any());
         verify(httpSecurity).authorizeHttpRequests(any());
         verify(httpSecurity).addFilterBefore(

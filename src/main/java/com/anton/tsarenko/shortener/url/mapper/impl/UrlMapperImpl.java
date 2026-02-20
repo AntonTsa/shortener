@@ -21,8 +21,8 @@ public class UrlMapperImpl implements UrlMapper {
     public Url toUrl(UrlRequest urlRequest, User user) {
         return Url.builder()
                 .originalUrl(urlRequest.originalUrl())
-                .user(user)
                 .expiredAt(Instant.now())
+                .user(user)
                 .build();
     }
 

@@ -5,6 +5,7 @@ import static com.anton.tsarenko.shortener.auth.mapper.impl.UserMapperImplFixtur
 import static com.anton.tsarenko.shortener.auth.mapper.impl.UserMapperImplFixture.USERNAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.anton.tsarenko.shortener.auth.dto.AuthRequest;
@@ -27,17 +28,17 @@ class UserMapperImplTest {
     @Test
     @DisplayName("""
             GIVEN valid auth request
-            WHEN toUser is called
+            WHEN toUserForRegistration is called
             THEN maps username and encoded password to user entity
             """)
-    void givenValidAuthRequest_whenToUser_thenMapsToUserEntity() {
+    void givenValidAuthRequest_whenToUserForRegistration_thenMapsToUserEntity() {
         // GIVEN
         UserMapperImpl mapper = new UserMapperImpl(passwordEncoder);
         AuthRequest request = new AuthRequest(USERNAME, RAW_PASSWORD);
         given(passwordEncoder.encode(RAW_PASSWORD)).willReturn(ENCODED_PASSWORD);
 
         // WHEN
-        User actualUser = mapper.toUser(request);
+        User actualUser = mapper.toUserForRegistration(request);
 
         // THEN
         assertThat(actualUser.getUsername()).isEqualTo(USERNAME);
@@ -49,19 +50,39 @@ class UserMapperImplTest {
     @Test
     @DisplayName("""
             GIVEN auth request with raw password
-            WHEN toUser is called
+            WHEN toUserForRegistration is called
             THEN password encoder is invoked with request password
             """)
-    void givenAuthRequest_whenToUser_thenUsesPasswordEncoder() {
+    void givenAuthRequest_whenToUserForRegistration_thenUsesPasswordEncoder() {
         // GIVEN
         UserMapperImpl mapper = new UserMapperImpl(passwordEncoder);
         AuthRequest request = new AuthRequest(USERNAME, RAW_PASSWORD);
         given(passwordEncoder.encode(RAW_PASSWORD)).willReturn(ENCODED_PASSWORD);
 
         // WHEN
-        mapper.toUser(request);
+        mapper.toUserForRegistration(request);
 
         // THEN
         verify(passwordEncoder).encode(RAW_PASSWORD);
+    }
+
+    @Test
+    @DisplayName("""
+            GIVEN valid auth request
+            WHEN toUserForLogin is called
+            THEN maps raw password without encoding
+            """)
+    void givenValidAuthRequest_whenToUserForLogin_thenMapsRawPassword() {
+        // GIVEN
+        UserMapperImpl mapper = new UserMapperImpl(passwordEncoder);
+        AuthRequest request = new AuthRequest(USERNAME, RAW_PASSWORD);
+
+        // WHEN
+        User actualUser = mapper.toUserForLogin(request);
+
+        // THEN
+        assertThat(actualUser.getUsername()).isEqualTo(USERNAME);
+        assertThat(actualUser.getPasswordHash()).isEqualTo(RAW_PASSWORD);
+        verify(passwordEncoder, never()).encode(RAW_PASSWORD);
     }
 }

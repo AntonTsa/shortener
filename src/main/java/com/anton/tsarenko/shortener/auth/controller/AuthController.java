@@ -51,7 +51,7 @@ public class AuthController {
     public ResponseEntity<Void> register(
             @RequestBody @Valid AuthRequest authRequest
     ) {
-        User user = mapper.toUser(authRequest);
+        User user = mapper.toUserForRegistration(authRequest);
 
         authService.register(user);
 
@@ -80,7 +80,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid AuthRequest request) {
-        User user = mapper.toUser(request);
+        User user = mapper.toUserForLogin(request);
 
         AuthResponse authResponse = new AuthResponse(authService.login(user));
 

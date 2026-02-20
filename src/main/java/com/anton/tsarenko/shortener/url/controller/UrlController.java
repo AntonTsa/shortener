@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Controller class for handling URL-related HTTP requests.
  */
 @Tag(name = "Urls", description = "Endpoints for managing shortened URLs")
+@SecurityRequirement(name = "bearerAuth")
 @Validated
 @RestController
 @RequiredArgsConstructor
