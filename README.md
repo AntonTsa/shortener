@@ -1,5 +1,31 @@
 # URL Shortener
 
+## General Description
+
+This project is a backend URL shortener service built with Spring Boot. It provides user authentication, short link generation, redirect handling, and basic link management for authenticated users.
+
+## Functionality
+
+- User registration and login with JWT-based authentication.
+- Create shortened links for authenticated users.
+- Redirect to the original URL by short code (`HTTP 302`).
+- Retrieve a paginated list of user links.
+- Delete previously created links.
+- OpenAPI/Swagger documentation for API endpoints.
+
+## Tech Stack
+
+- Java 21
+- Spring Boot (Web MVC, Security, Validation, Data JPA, JDBC)
+- PostgreSQL
+- Flyway (database migrations)
+- JWT (`jjwt`)
+- Springdoc OpenAPI / Swagger UI
+- Lombok
+- Gradle
+- Docker Compose (local PostgreSQL)
+- JUnit 5 + Spring Boot Test + Testcontainers (integration tests)
+
 ## How to Run After Cloning from GitHub
 
 1. Copy the environment template:
